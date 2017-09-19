@@ -50,18 +50,29 @@ public class TypeParser {
         listSyntaxItems.add(new SyntaxItem("BITS(*)"));
         listSyntaxItems.add(new SyntaxItem("BITS2", "\\((\\d+)\\)", 1));
         listSyntaxItems.add(new SyntaxItem("BOOL"));
-        listSyntaxItems.add(new SyntaxItem("DATETIME", "\\[(\\w+)(:(\\w+))?\\]", 1,3));
+        listSyntaxItems.add(new SyntaxItem("DATETIME", "\\[(\\w+)(:(\\w+))?\\]", 1, 3, String.class));
         listSyntaxItems.add(new SyntaxItem("DATE"));
         listSyntaxItems.add(new SyntaxItem("TIME"));
         listSyntaxItems.add(new SyntaxItem("TIMESTAMP"));
-        listSyntaxItems.add(new SyntaxItem("TIMESPAN", "\\[(\\w+)(:(\\w+))?\\]", 1, 3));
+        listSyntaxItems.add(new SyntaxItem("TIMESPAN", "\\[(\\w+)(:(\\w+))?\\]", 1, 3, String.class));
         listSyntaxItems.add(new SyntaxItem("BLOB"));
         listSyntaxItems.add(new SyntaxItem("CLOB"));
 
     }
     public void parse(String source) {
         for (SyntaxItem i: listSyntaxItems) {
-            i.match(source);
+            List<Object> r = i.match(source);
+            if (r != null) {
+                if (r.size() > 0) {
+                    System.out.println (i.getClazz());
+                    for (Object e: r) {
+                        System.out.println (e);
+                    }
+                }
+                System.out.println (i._datatype);
+                break;
+
+            }
         }
     }
 }

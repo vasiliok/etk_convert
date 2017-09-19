@@ -14,6 +14,7 @@ public class SyntaxItem {
     Pattern _compileRegexp;
     String _datatype;
     String _source;
+    Class<?> _clazz;
     public SyntaxItem(String dataType) {
         _datatype = dataType;
     }
@@ -27,18 +28,37 @@ public class SyntaxItem {
     public SyntaxItem(String dataType, String regexp, Integer g1, Integer g2) {
         this(dataType, regexp, g1);
         _g2 = g2;
+        _clazz = Integer.class;
+    }
+    public SyntaxItem(String dataType, String regexp, Integer g1, Integer g2, Class<?> clazz) {
+        this(dataType, regexp, g1, g2);
+        _clazz = clazz;
     }
     public SyntaxItem(String dataType, String regexp, Integer g1, Integer g2, Integer g3) {
         this(dataType, regexp, g1, g2);
         _g3 = g3;
     }
     public List<Object> match(String inp) {
-        inp.substring(1, _datatype.length()).equalsIgnoreCase(_datatype)
-        Matcher m = _compileRegexp.matcher(inp);
-        List<Object> res = new ArrayList<Object>();
-        if (m.matches()) {
-            if (_g1 != null) res.add(m.group(_g1));
-            if (_g2 != null) res.add(m.group(_g2));
-            if (_g3 != null) res.add(m.group(_g3));
+        List<Object> res = null;
+        String tile;
+        if (inp.length() >= _datatype.length() && inp.substring(0, _datatype.length()).equalsIgnoreCase(_datatype)) {
+            if (inp.length() == _datatype.length()) {
+                return new ArrayList<Object>();
+            }
+            tile = inp.substring(_datatype.length());
+            Matcher m = _compileRegexp.matcher(tile);
+
+            if (m.matches()) {
+                res = new ArrayList<Object>();
+                if (_g1 != null) res.add(m.group(_g1));
+                if (_g2 != null) res.add(m.group(_g2));
+                if (_g3 != null) res.add(m.group(_g3));
+            }
+
         }
+        return res;
+    }
+    public Class<?> getClazz() {
+        return _clazz;
+    }
 }

@@ -23,7 +23,8 @@ public class Main {
         while (rset.next()) {
             Object cname = rset.getObject("cname");
             Object ctype = rset.getObject("ctype");
-            ColumnType columnType = new ColumnType((String) ctype);
+            typeParser.parse(ctype.toString());
+//            ColumnType columnType = new ColumnType((String) ctype);
 
 
             System.out.println (cname);
