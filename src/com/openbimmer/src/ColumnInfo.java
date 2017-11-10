@@ -1,4 +1,4 @@
-package com.openbimmer;
+package com.openbimmer.src;
 
 /**
  * Created by bacil on 13.09.2017.

@@ -1,4 +1,4 @@
-package com.openbimmer;
+package com.openbimmer.src;
 
 import java.sql.*;
 
@@ -13,8 +13,6 @@ public class Main {
         String pw = "altabe";
 
         TypeParser typeParser = new TypeParser();
-
-
         Connection conn = DriverManager.getConnection(dburl, uname, pw);
         // Query systable
         Statement stmt = conn.createStatement ();
@@ -24,14 +22,7 @@ public class Main {
             Object cname = rset.getObject("cname");
             Object ctype = rset.getObject("ctype");
             typeParser.parse(ctype.toString());
-//            ColumnType columnType = new ColumnType((String) ctype);
-
-
             System.out.println (cname);
-/*
-            new ColumnInfo(cname)
-            rset.
-*/
         }
     }
 
