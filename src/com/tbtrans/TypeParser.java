@@ -9,6 +9,10 @@ import java.util.List;
 public class TypeParser {
     List<SyntaxItem> listSyntaxItems = new ArrayList<SyntaxItem>();
 
+    public List<SyntaxItem> getListSyntaxItems() {
+        return listSyntaxItems;
+    }
+
     public TypeParser() {
         listSyntaxItems.add(new SyntaxItem("TINYINT", DBType.TINYINT));
         listSyntaxItems.add(new SyntaxItem("SMALLINT", DBType.SMALLINT));
@@ -17,11 +21,11 @@ public class TypeParser {
 
         listSyntaxItems.add(new SyntaxItem("NUMERIC",
                 "(\\((\\d+)(,(\\d+))?\\))?", 2, 4,
-                (Integer precision, Integer scale) -> {return String.format("Decimal(%d, %d)", precision, scale);} ));
+                (Integer precision, Integer scale) -> {return String.format("DECIMAL(%d, %d)", precision, scale);} ));
 
         listSyntaxItems.add(new SyntaxItem("DECIMAL",
                 "(\\((\\d+)(,(\\d+))?\\))?", 2, 4,
-                (Integer precision, Integer scale) -> {return String.format("Decimal(%d, %d)", precision, scale);} ));
+                (Integer precision, Integer scale) -> {return String.format("DECIMAL(%d, %d)", precision, scale);} ));
 
         listSyntaxItems.add(new SyntaxItem("FLOAT", DBType.FLOAT));
         listSyntaxItems.add(new SyntaxItem("DOUBLE", DBType.DOUBLE));
@@ -36,7 +40,8 @@ public class TypeParser {
         listSyntaxItems.add(new SyntaxItem("BITS(*)", DBType.BIT));
         listSyntaxItems.add(new SyntaxItem("BITS2", "\\((\\d+)\\)", 1, DBType.BIT));
         listSyntaxItems.add(new SyntaxItem("BOOL", DBType.BOOL));
-        listSyntaxItems.add(new SyntaxItem("DATETIME", "\\[(\\w+)(:(\\w+))?\\]", 1, 3, DBType.DATETIME));
+        listSyntaxItems.add(new SyntaxItem("DATETIME[yy:ms]", DBType.TIMESTAMP));
+        //listSyntaxItems.add(new SyntaxItem("DATETIME", "\\[(\\w+)(:(\\w+))?\\]", 1, 3, DBType.TIMESTAMP));
         listSyntaxItems.add(new SyntaxItem("DATE", DBType.DATE));
         listSyntaxItems.add(new SyntaxItem("TIME", DBType.TIME));
         listSyntaxItems.add(new SyntaxItem("TIMESTAMP", DBType.TIMESTAMP));
@@ -45,17 +50,31 @@ public class TypeParser {
         listSyntaxItems.add(new SyntaxItem("CLOB"));
     }
 
+    public String parseEx(String src) throws Exception {
+        ResultMath lo;
+        for (SyntaxItem k: listSyntaxItems) {
+            lo = k.match(src);
+            if (lo != null && lo.getMatches()) {
+                return k.getTranslated();
+            }
+        }
+        return null;
+    }
+
     public SyntaxItem parse(String source) {
-        System.out.printf("-- parse(%s)\n", source);
+        // System.out.printf("-- parse(%s)\n", source);
 
         ResultMath r = null;
         for (SyntaxItem i: listSyntaxItems) {
             r = i.match(source);
+            if (r != null && r.getMatches()) {
+                return i;
+            }
             if (r != null) {
                 if (r.groupCount() > 0) {
-                    for (Integer k = 0; k < r.groupCount(); k++) {
-                        System.out.format("%s, ", r.getGroup(k));
-                    }
+                    // for (Integer k = 0; k < r.groupCount(); k++) {
+                        // System.out.format("%s, ", r.getGroup(k));
+                    // }
 
                     return i;
                     //System.out.format("DBType: %s\n", i.getDBType().toString());
@@ -64,7 +83,7 @@ public class TypeParser {
 //                    }
                     //System.out.println();
                 }
-                System.out.println (i._datatype);
+                // System.out.println (i._datatype);
                 return i;
             }
         }

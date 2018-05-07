@@ -26,49 +26,51 @@ public class TestSyntaxItem {
 
     @Test
     public void batchtest() throws Exception {
+        TypeParser typeParser = new TypeParser();
+
         List<SyntaxItem> listSyntaxItems = new ArrayList<SyntaxItem>();
 
-        listSyntaxItems.add(new SyntaxItem("TINYINT", DBType.TINYINT));
-        listSyntaxItems.add(new SyntaxItem("SMALLINT", DBType.SMALLINT));
-        listSyntaxItems.add(new SyntaxItem("INTEGER", DBType.INT));
-        listSyntaxItems.add(new SyntaxItem("BIGINT", DBType.BIGINT));
-
-        listSyntaxItems.add(new SyntaxItem("NUMERIC",
-                "(\\((\\d+)(,(\\d+))?\\))?", 2, 4,
-                (Integer precision, Integer scale) -> {return String.format("DECIMAL(%d,%d)", precision, scale);} ));
-
-        listSyntaxItems.add(new SyntaxItem("DECIMAL",
-                "(\\((\\d+)(,(\\d+))?\\))?", 2, 4,
-                (Integer precision, Integer scale) -> {return String.format("Decimal(%d, %d)", precision, scale);} ));
-
-        listSyntaxItems.add(new SyntaxItem("FLOAT", DBType.FLOAT));
-        listSyntaxItems.add(new SyntaxItem("DOUBLE", DBType.DOUBLE));
-        listSyntaxItems.add(new SyntaxItem("REAL", DBType.REAL));
-        listSyntaxItems.add(new SyntaxItem("VARCHAR", "(\\((\\d+)\\))?", 2, DBType.VARCHAR));
-        listSyntaxItems.add(new SyntaxItem("CHAR", "(\\((\\d+)\\))?", 2, DBType.CHAR));
-        listSyntaxItems.add(new SyntaxItem("CHAR(*)", DBType.CHAR));
-        listSyntaxItems.add(new SyntaxItem("STRING", DBType.CHAR));
-        listSyntaxItems.add(new SyntaxItem("BINCHAR","(\\((\\d+)\\))?", 2, DBType.BINARY));
-        listSyntaxItems.add(new SyntaxItem("BINCHAR(*)", DBType.BINARY));
-        listSyntaxItems.add(new SyntaxItem("BITS", "\\((\\d+)\\)", 1, DBType.BIT));
-        listSyntaxItems.add(new SyntaxItem("BITS(*)", DBType.BIT));
-        listSyntaxItems.add(new SyntaxItem("BITS2", "\\((\\d+)\\)", 1, DBType.BIT));
-        listSyntaxItems.add(new SyntaxItem("BOOL", DBType.BOOL));
-        listSyntaxItems.add(new SyntaxItem("DATETIME[yy:ms]", DBType.TIMESTAMP));
-        //listSyntaxItems.add(new SyntaxItem("DATETIME", "\\[(\\w+)(:(\\w+))?\\]", 1, 3, DBType.DATETIME));
-        listSyntaxItems.add(new SyntaxItem("DATE", DBType.DATE));
-        listSyntaxItems.add(new SyntaxItem("TIME", DBType.TIME));
-        listSyntaxItems.add(new SyntaxItem("TIMESTAMP", DBType.TIMESTAMP));
-        listSyntaxItems.add(new SyntaxItem("TIMESPAN", "\\[(\\w+)(:(\\w+))?\\]", 1, 3, DBType.TIME));
-        listSyntaxItems.add(new SyntaxItem("BLOB", DBType.BLOB));
-        listSyntaxItems.add(new SyntaxItem("CLOB"));
+//        listSyntaxItems.add(new SyntaxItem("TINYINT", DBType.TINYINT));
+//        listSyntaxItems.add(new SyntaxItem("SMALLINT", DBType.SMALLINT));
+//        listSyntaxItems.add(new SyntaxItem("INTEGER", DBType.INT));
+//        listSyntaxItems.add(new SyntaxItem("BIGINT", DBType.BIGINT));
+//
+//        listSyntaxItems.add(new SyntaxItem("NUMERIC",
+//                "(\\((\\d+)(,(\\d+))?\\))?", 2, 4,
+//                (Integer precision, Integer scale) -> {return String.format("DECIMAL(%d,%d)", precision, scale);} ));
+//
+//        listSyntaxItems.add(new SyntaxItem("DECIMAL",
+//                "(\\((\\d+)(,(\\d+))?\\))?", 2, 4,
+//                (Integer precision, Integer scale) -> {return String.format("Decimal(%d, %d)", precision, scale);} ));
+//
+//        listSyntaxItems.add(new SyntaxItem("FLOAT", DBType.FLOAT));
+//        listSyntaxItems.add(new SyntaxItem("DOUBLE", DBType.DOUBLE));
+//        listSyntaxItems.add(new SyntaxItem("REAL", DBType.REAL));
+//        listSyntaxItems.add(new SyntaxItem("VARCHAR", "(\\((\\d+)\\))?", 2, DBType.VARCHAR));
+//        listSyntaxItems.add(new SyntaxItem("CHAR", "(\\((\\d+)\\))?", 2, DBType.CHAR));
+//        listSyntaxItems.add(new SyntaxItem("CHAR(*)", DBType.CHAR));
+//        listSyntaxItems.add(new SyntaxItem("STRING", DBType.CHAR));
+//        listSyntaxItems.add(new SyntaxItem("BINCHAR","(\\((\\d+)\\))?", 2, DBType.BINARY));
+//        listSyntaxItems.add(new SyntaxItem("BINCHAR(*)", DBType.BINARY));
+//        listSyntaxItems.add(new SyntaxItem("BITS", "\\((\\d+)\\)", 1, DBType.BIT));
+//        listSyntaxItems.add(new SyntaxItem("BITS(*)", DBType.BIT));
+//        listSyntaxItems.add(new SyntaxItem("BITS2", "\\((\\d+)\\)", 1, DBType.BIT));
+//        listSyntaxItems.add(new SyntaxItem("BOOL", DBType.BOOL));
+//        listSyntaxItems.add(new SyntaxItem("DATETIME[yy:ms]", DBType.TIMESTAMP));
+//        //listSyntaxItems.add(new SyntaxItem("DATETIME", "\\[(\\w+)(:(\\w+))?\\]", 1, 3, DBType.DATETIME));
+//        listSyntaxItems.add(new SyntaxItem("DATE", DBType.DATE));
+//        listSyntaxItems.add(new SyntaxItem("TIME", DBType.TIME));
+//        listSyntaxItems.add(new SyntaxItem("TIMESTAMP", DBType.TIMESTAMP));
+//        listSyntaxItems.add(new SyntaxItem("TIMESPAN", "\\[(\\w+)(:(\\w+))?\\]", 1, 3, DBType.TIME));
+//        listSyntaxItems.add(new SyntaxItem("BLOB", DBType.BLOB));
+//        listSyntaxItems.add(new SyntaxItem("CLOB"));
 
         Map<String, String> input_map = new HashMap<String, String>();
         input_map.put("VARCHAR(10)", "VARCHAR(10)");
         input_map.put("VARCHAR(420)", "VARCHAR(420)");
         input_map.put("VARCHAR(1024)", "VARCHAR(1024)");
-        input_map.put("NUMERIC(3,1)", "DECIMAL(3,1)");
-        input_map.put("NUMERIC(14,1)", "DECIMAL(14,1)");
+        input_map.put("NUMERIC(3,1)", "DECIMAL(3, 1)");
+        input_map.put("NUMERIC(14,1)", "DECIMAL(14, 1)");
         input_map.put("INTEGER", "INT");
         input_map.put("CHAR(*)", "CHAR");
         input_map.put("CHAR(4)", "CHAR(4)");
@@ -84,15 +86,27 @@ public class TestSyntaxItem {
             if (e.getKey().equalsIgnoreCase("DATETIME[yy:ms]")) {
                 int a=1;
             }
-            ResultMath lo = null;
-            for (SyntaxItem k: listSyntaxItems) {
-                lo = k.match(e.getKey());
-                if (lo != null && lo.getMatches()) {
-                    String translate = k.getTranslated();
-                    assertEquals(String.format("%s:%s", e.getKey(), e.getValue()),e.getValue(), translate);
-                    System.out.printf("%s\n", translate);
-                }
-            }
+            String translated =  typeParser.parseEx(e.getKey());
+            //String translated = parsed_si.getTranslated();
+            assertEquals(
+                    String.format("%s:%s", e.getKey(), e.getValue()),
+                    e.getValue(),
+                    translated
+            );
+
+            System.out.printf("%s\n", translated);
+
+//--
+//            ResultMath lo = null;
+//            for (SyntaxItem k: listSyntaxItems) {
+//                lo = k.match(e.getKey());
+//                if (lo != null && lo.getMatches()) {
+//                    String translate = k.getTranslated();
+//                    assertEquals(String.format("%s:%s", e.getKey(), e.getValue()),e.getValue(), translate);
+//                    System.out.printf("%s\n", translate);
+//                }
+//            }
+//--
         }
 
 

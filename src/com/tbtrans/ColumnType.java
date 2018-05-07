@@ -60,6 +60,7 @@ public class ColumnType {
 //        _length = length;
 //        _format = fmt;
 //    }
+
 //    public ColumnType(String type) {
 //        Pattern p = Pattern.compile("(\\w+)((\\([\\d\\,\\*]?\\))|(\\[(\\w+:\\w+)\\]))");
 //        Matcher m = p.matcher(type);
