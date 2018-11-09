@@ -4,7 +4,7 @@ package com.tbtrans;
  * Created by bacil on 13.09.2017.
  */
 
-public class ColumnInfo {
+public class ColumnInfo  implements ColumnInfoInterface{
     String _name;
     String _type;
     boolean _notnull = false;
@@ -26,7 +26,7 @@ public class ColumnInfo {
     public String getType() {
         return _type;
     }
-    public int isKey() {
+    public int getCKey() {
         return _ckey;
     }
     public boolean isNotNull() {
@@ -37,16 +37,15 @@ public class ColumnInfo {
         return _translateType;
     }
 
-    public ColumnInfo(String name, String tr_type, String orig_type, Boolean notnull, String default_value, Integer ckey, Integer cpos) {
+    public ColumnInfo(String name, String tr_type, String orig_type, SyntaxItem si, Boolean notnull, String default_value, Integer ckey, Integer cpos) {
         _name = name;
-        //_syntaxItem = si;
+        _syntaxItem = si;
         _translateType = tr_type;
         _type = orig_type;
         _notnull = notnull;
         _default_value = default_value;
         _ckey = ckey;
         _cpos = cpos;
-
     }
 
     public String translateType() throws Exception {
@@ -60,6 +59,5 @@ public class ColumnInfo {
     public ColumnInfo(String name, String type) {
         _name = name;
         _type = type;
-
     }
 }

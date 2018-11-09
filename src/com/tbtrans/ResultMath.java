@@ -9,7 +9,9 @@ import java.util.List;
 public class ResultMath {
     List<String> _groups = null;
     Boolean _matches = null;
-    public ResultMath(boolean matches) {
+    SyntaxItem _si;
+    public ResultMath(SyntaxItem si, boolean matches) {
+        _si = si;
         _matches = matches;
         _groups = new ArrayList<>();
     }

@@ -30,8 +30,8 @@ public class TypeParser {
         listSyntaxItems.add(new SyntaxItem("FLOAT", DBType.FLOAT));
         listSyntaxItems.add(new SyntaxItem("DOUBLE", DBType.DOUBLE));
         listSyntaxItems.add(new SyntaxItem("REAL", DBType.REAL));
-        listSyntaxItems.add(new SyntaxItem("VARCHAR", "(\\((\\d+)\\))?", 2, DBType.VARCHAR));
-        listSyntaxItems.add(new SyntaxItem("CHAR", "(\\((\\d+)\\))?", 2, DBType.CHAR));
+        listSyntaxItems.add(new SyntaxItem("VARCHAR", "(\\((\\d+)\\))?", 2, DBType.VARCHAR, "\""));
+        listSyntaxItems.add(new SyntaxItem("CHAR", "(\\((\\d+)\\))?", 2, DBType.CHAR, "\""));
         listSyntaxItems.add(new SyntaxItem("CHAR(*)", DBType.CHAR));
         listSyntaxItems.add(new SyntaxItem("STRING", DBType.CHAR));
         listSyntaxItems.add(new SyntaxItem("BINCHAR","(\\((\\d+)\\))?", 2, DBType.BINARY));
@@ -50,6 +50,15 @@ public class TypeParser {
         listSyntaxItems.add(new SyntaxItem("CLOB"));
     }
 
+    public SyntaxItem findSyntaxItem(String c) {
+        for (SyntaxItem k : listSyntaxItems) {
+            if (k.match1(c)) {
+                return k;
+            }
+        }
+        return null;
+    }
+
     public String parseEx(String src) throws Exception {
         ResultMath lo;
         for (SyntaxItem k: listSyntaxItems) {
@@ -61,35 +70,4 @@ public class TypeParser {
         return null;
     }
 
-    public SyntaxItem parse(String source) {
-        // System.out.printf("-- parse(%s)\n", source);
-
-        ResultMath r = null;
-        for (SyntaxItem i: listSyntaxItems) {
-            r = i.match(source);
-            if (r != null && r.getMatches()) {
-                return i;
-            }
-            if (r != null) {
-                if (r.groupCount() > 0) {
-                    // for (Integer k = 0; k < r.groupCount(); k++) {
-                        // System.out.format("%s, ", r.getGroup(k));
-                    // }
-
-                    return i;
-                    //System.out.format("DBType: %s\n", i.getDBType().toString());
-//                    for (Object e: r) {
-//                        System.out.format("%s, ", e);
-//                    }
-                    //System.out.println();
-                }
-                // System.out.println (i._datatype);
-                return i;
-            }
-        }
-        if (r == null) {
-            System.out.println("Parse error");
-        }
-        return null;
-    }
 }
