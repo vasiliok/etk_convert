@@ -31,15 +31,15 @@ public class Postgress implements Meta {
 
         for(ColumnInfo j: ti.getColumns()) {
 
-            String transType = j.getSyntaxItem().translate();
+            //String transType = j.getSyntaxItem().translate();
             System.out.printf("%10d|%40s|%20s|%10d|%10s\n",
                     j.getCPos(),
                     j.getName(),
-                    j.getTransType(),
+                    j.getResultMatch().translate(),
                     j.getCKey(),
                     j.isNotNull() ? "Y" : "N");
 
-            String col_repr = String.format("\"%s\" %s %s", j.getName(), j.getTransType(), j.isNotNull() ? "not null" : "");
+            String col_repr = String.format("\"%s\" %s %s", j.getName(), j.getResultMatch().translate(), j.isNotNull() ? "not null" : "");
 
             sql_column_list.add(col_repr);
 

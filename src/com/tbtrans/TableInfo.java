@@ -10,9 +10,11 @@ public class TableInfo {
     String _tableName;
     List<ColumnInfo> _listColumns = new ArrayList<ColumnInfo>();
     List<Constraint> _listConstraint = new ArrayList<Constraint>();
+
     TableInfo(String tableName) {
         _tableName = tableName;
     }
+
     public void appendColumn(ColumnInfo col) {
         _listColumns.add(col);
     }

@@ -11,15 +11,13 @@ public class ColumnInfo  implements ColumnInfoInterface{
     String _default_value;
     int _ckey = 0;
     int _cpos = 0;
-    SyntaxItem _syntaxItem;
+    ResultMath _rm;
     String _translateType;
 
     public int getCPos() {
         return _cpos;
     }
-    public SyntaxItem getSyntaxItem() {
-        return _syntaxItem;
-    }
+    public ResultMath getResultMatch() { return _rm; }
     public String getName() {
         return _name;
     }
@@ -33,14 +31,10 @@ public class ColumnInfo  implements ColumnInfoInterface{
         return _notnull;
     }
 
-    public String getTransType() {
-        return _translateType;
-    }
 
-    public ColumnInfo(String name, String tr_type, String orig_type, SyntaxItem si, Boolean notnull, String default_value, Integer ckey, Integer cpos) {
+    public ColumnInfo(String name, String orig_type, ResultMath rm, Boolean notnull, String default_value, Integer ckey, Integer cpos) {
         _name = name;
-        _syntaxItem = si;
-        _translateType = tr_type;
+        _rm = rm;
         _type = orig_type;
         _notnull = notnull;
         _default_value = default_value;
@@ -48,14 +42,6 @@ public class ColumnInfo  implements ColumnInfoInterface{
         _cpos = cpos;
     }
 
-    public String translateType() throws Exception {
-        ResultMath r = _syntaxItem.match(_type);
-        if (r != null && r.getMatches()) {
-            String translate = _syntaxItem.getTranslated();
-            return translate;
-        }
-        return null;
-    }
     public ColumnInfo(String name, String type) {
         _name = name;
         _type = type;

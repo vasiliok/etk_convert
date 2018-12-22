@@ -66,22 +66,23 @@ public class Main {
             }
 
             TableInfo table_info = tableMap.getOrDefault(tname, new TableInfo(tname.toString()));
-            SyntaxItem si = typeParser.findSyntaxItem(ctype.toString());
+            ResultMath rm = typeParser.findSyntaxItem(ctype.toString());
 
-            String translatedType = typeParser.parseEx(ctype.toString());
-            if (translatedType != null) {
+            if (rm.isMatch()) {
                 table_info.appendColumn(
                         new ColumnInfo(
                                 cname.toString(),
-                                translatedType,
                                 ctype.toString(),
-                                si,
+                                rm,
                                 isnotnull.toString().equals("Y"),
                                 dfltval.toString(),
                                 (Integer) ckey,
                                 (Integer) cpos
                         )
                 );
+            }
+            else {
+                throw new Exception(String.format("Cannot parse item %s", ctype.toString()));
             }
 
 //            ResultMath r = null;

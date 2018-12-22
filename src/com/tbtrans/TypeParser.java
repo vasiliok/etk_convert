@@ -50,24 +50,13 @@ public class TypeParser {
         listSyntaxItems.add(new SyntaxItem("CLOB"));
     }
 
-    public SyntaxItem findSyntaxItem(String c) {
+    public ResultMath findSyntaxItem(String c) {
         for (SyntaxItem k : listSyntaxItems) {
-            if (k.match1(c)) {
-                return k;
+            ResultMath r = k.match(c);
+            if (r.isMatch()) {
+                return r;
             }
         }
         return null;
     }
-
-    public String parseEx(String src) throws Exception {
-        ResultMath lo;
-        for (SyntaxItem k: listSyntaxItems) {
-            lo = k.match(src);
-            if (lo != null && lo.getMatches()) {
-                return k.getTranslated();
-            }
-        }
-        return null;
-    }
-
 }
