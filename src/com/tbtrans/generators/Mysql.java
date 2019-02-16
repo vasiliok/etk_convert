@@ -10,7 +10,7 @@ public class Mysql implements Meta {
     public Mysql() {
     }
     @Override
-    public String getConstraint() {
+    public String getFormatConstraint() {
         return "CONSTRAINT %s PRIMARY KEY (%s)";
     }
 
@@ -23,4 +23,10 @@ public class Mysql implements Meta {
     public String  genTableDef(String table_name, TableInfo ti) {
         return "";
     }
+
+    @Override
+    public String convertConstraintName(String cn) {
+        return cn;
+    }
+
 }

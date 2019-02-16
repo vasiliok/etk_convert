@@ -14,7 +14,8 @@ public class TypeParser {
     }
 
     public TypeParser() {
-        listSyntaxItems.add(new SyntaxItem("TINYINT", DBType.TINYINT));
+        listSyntaxItems.add(new SyntaxItem("TINYINT", DBType.SMALLINT));
+        //listSyntaxItems.add(new SyntaxItem("TINYINT", DBType.TINYINT));
         listSyntaxItems.add(new SyntaxItem("SMALLINT", DBType.SMALLINT));
         listSyntaxItems.add(new SyntaxItem("INTEGER", DBType.INT));
         listSyntaxItems.add(new SyntaxItem("BIGINT", DBType.BIGINT));
@@ -30,8 +31,8 @@ public class TypeParser {
         listSyntaxItems.add(new SyntaxItem("FLOAT", DBType.FLOAT));
         listSyntaxItems.add(new SyntaxItem("DOUBLE", DBType.DOUBLE));
         listSyntaxItems.add(new SyntaxItem("REAL", DBType.REAL));
-        listSyntaxItems.add(new SyntaxItem("VARCHAR", "(\\((\\d+)\\))?", 2, DBType.VARCHAR, "\""));
-        listSyntaxItems.add(new SyntaxItem("CHAR", "(\\((\\d+)\\))?", 2, DBType.CHAR, "\""));
+        listSyntaxItems.add(new SyntaxItem("VARCHAR", "(\\((\\d+)\\))?", 2, DBType.VARCHAR, "'"));
+        listSyntaxItems.add(new SyntaxItem("CHAR", "(\\((\\d+)\\))?", 2, DBType.CHAR, "'"));
         listSyntaxItems.add(new SyntaxItem("CHAR(*)", DBType.CHAR));
         listSyntaxItems.add(new SyntaxItem("STRING", DBType.CHAR));
         listSyntaxItems.add(new SyntaxItem("BINCHAR","(\\((\\d+)\\))?", 2, DBType.BINARY));
@@ -46,7 +47,8 @@ public class TypeParser {
         listSyntaxItems.add(new SyntaxItem("TIME", DBType.TIME));
         listSyntaxItems.add(new SyntaxItem("TIMESTAMP", DBType.TIMESTAMP));
         listSyntaxItems.add(new SyntaxItem("TIMESPAN", "\\[(\\w+)(:(\\w+))?\\]", 1, 3, DBType.TIME));
-        listSyntaxItems.add(new SyntaxItem("BLOB", DBType.BLOB));
+        //listSyntaxItems.add(new SyntaxItem("BLOB", DBType.BLOB));
+        listSyntaxItems.add(new SyntaxItem("BLOB", DBType.BYTEA, (Object d) -> {return d.getClass().toString();}));
         listSyntaxItems.add(new SyntaxItem("CLOB"));
     }
 

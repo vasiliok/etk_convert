@@ -2,6 +2,7 @@ package com.tbtrans;
 
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,13 +29,15 @@ public class SyntaxItem implements Cloneable{
         return _dbtype;
     }
 
+    ResultMath _resultMath = null;
+
     public String getWrap() {
         return _wrap;
     }
 
-    ResultMath _resultMath = null;
     String _wrap;
 
+    Function _takeData;
     public SyntaxItem(String dataType) {
         _datatype = dataType;
         _g1 = 0;
@@ -43,6 +46,15 @@ public class SyntaxItem implements Cloneable{
         _dbtype = DBType.NONE;
         _paramCount = 0;
         _translateResult = null;
+        _takeData = null;
+    }
+
+    public SyntaxItem(String dataType, DBType dbtype, Function takeData) {
+        this(dataType);
+        _dbtype = dbtype;
+        _wrap = "";
+        _takeData = _takeData;
+
     }
 
     public SyntaxItem(String dataType, DBType dbtype, String wrap) {
@@ -124,6 +136,15 @@ public class SyntaxItem implements Cloneable{
             return new ResultMath(this, matcher);
         }
         return new ResultMath(false);
+    }
+
+    public String takeData(Object d) {
+        if (_takeData == null) {
+            return d.toString();
+        }
+        else {
+            return (String) _takeData.apply(d);
+        }
     }
 //    public String translate() throws Exception {
 //        if (_matcher == null) {

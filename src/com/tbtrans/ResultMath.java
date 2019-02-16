@@ -20,6 +20,9 @@ public class ResultMath {
         _si = si;
         _matcher = matcher;
     }
+    public SyntaxItem getSyntaxItem() {
+        return _si;
+    }
     public String translate() throws Exception {
         if (_matcher == null) {
             return _si.getDBType().toString();

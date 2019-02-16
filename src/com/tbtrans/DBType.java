@@ -21,5 +21,7 @@ enum DBType {
     DATE,
     TIME,
     TIMESTAMP,
-    BLOB
+    BLOB,
+    BYTEA;
+
 }

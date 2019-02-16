@@ -1,21 +1,44 @@
 package com.tbtrans;
 
+import com.tbtrans.generators.Meta;
 import com.tbtrans.generators.Mysql;
 import com.tbtrans.generators.Postgress;
 
+import javax.swing.table.TableModel;
+import java.io.*;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /*
+MODIFICS:
+Cleared code
+Add check that field do not being default null and primary key together
+
+
 TODO:
+    // for pg specific
+    // if field occurs in primary key and if smae field marked as have null value than that field must be exclude from list of primary keys
+    // Bug incorrect detrmining modification of column defined
+    // in detail:
+    //   table w_btzeilen_cp, field "btzeilenc_datum",
+    //   must be default null
+    //   actual value
 
 
  */
 public class Main {
-    public static String getTableDefinition(Connection conn) throws Exception {
+    private static class Options {
+        public String outFileName = "pg_etk_dump_sql.txt";
+        public String tableName;
+        public Boolean takeTableList = false;
+        public Boolean skipTableDef = false;
+    }
+    public static String getTableDefinition(Connection conn, Options opts) throws Exception {
         // Query systable
         TypeParser typeParser = new TypeParser();
+
+        Meta dbutil = new Postgress();
 
         Statement stmt = conn.createStatement();
 
@@ -31,20 +54,25 @@ public class Main {
         while(table_resuslt.next()) {
             Object tname = table_resuslt.getObject("tname");
             String ttype = table_resuslt.getObject("ttype").toString();
-            Object cnstrnt_name = table_resuslt.getObject("constraintname");
+            Object cnstrnt_name_obj = table_resuslt.getObject("constraintname");
+            String constrnt_name_str = "";
+            if (cnstrnt_name_obj != null) {
+                constrnt_name_str = dbutil.convertConstraintName(table_resuslt.getObject("constraintname").toString());
+            }
+
             Object cnstrnt_text = table_resuslt.getObject("constrainttext");
-            if (ttype.equals("R") && !cnstrnt_name.toString().isEmpty()) {
+            if (ttype.equals("R") && ! constrnt_name_str.isEmpty()) {
                 TableInfo table_info = tableMap.getOrDefault(tname.toString(), new TableInfo(tname.toString()));
-                table_info.appendConstraint(new Constraint(cnstrnt_name.toString(), cnstrnt_text.toString()));
-                tableMap.put(tname.toString(),  table_info);
+                table_info.appendConstraint(new Constraint(constrnt_name_str, cnstrnt_text.toString()));
+                tableMap.put(tname.toString(), table_info);
             }
         }
 
-        Map<String, List<ColumnInfo>> tablesInfo = new HashMap<String, List<ColumnInfo>>();
         ResultSet rset = stmt.executeQuery (
                 "select tname, ttype, cname, cpos, ctype, defaultvalue, notnull, ckey from syscolumn col inner join systable tbl on tbl.segno=col.tsegno");
+
         // Print the name out
-        Set<String> typeSet = new HashSet();
+
 
         while (rset.next()) {
             Object tname = rset.getObject("tname");
@@ -82,39 +110,39 @@ public class Main {
                 );
             }
             else {
-                throw new Exception(String.format("Cannot parse item %s", ctype.toString()));
+                throw new Exception(String.format("Can not parse item '%s'", ctype.toString()));
             }
 
-//            ResultMath r = null;
-//            for (SyntaxItem i: typeParser.getListSyntaxItems())
-//            {
-//                r = i.match(ctype.toString());
-//                if (r != null && r.getMatches()) {
-//                    table_info.appendColumn(
-//                            new ColumnInfo(
-//                                    cname.toString(),
-//                                    typeParser.parseEx(ctype.toString()),
-//                                    ctype.toString(),
-//                                    isnotnull.toString().equals("Y"),
-//                                    dfltval.toString(),
-//                                    (Integer) ckey,
-//                                    (Integer) cpos
-//                            )
-//                    );
-//                    break;
-//                }
-//            }
-
             tableMap.put(tname.toString(), table_info);
-            typeSet.add(ctype.toString());
 
-            List<ColumnInfo> l = tablesInfo.getOrDefault(tname, new ArrayList<ColumnInfo>());
-            //System.out.println(cname);
         }
 
+        if (opts.takeTableList) {
+            for (String t: tableMap.keySet()) {
+                System.out.printf("%s\n", t);
+            }
+            return "";
+        }
         Generator gen = new Generator(new Postgress(), tableMap);
-        String gen_res = gen.take();
-        return gen_res;
+        Map<String, String> gen_res = gen.take(opts.tableName);
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter(opts.outFileName));
+
+
+        for (Map.Entry<String, String> e: gen_res.entrySet()) {
+            if (e.getKey().equalsIgnoreCase("w_marketingprodukt_text")) {
+                int a=1;
+            }
+            System.out.printf("Table: %s\n", e.getKey());
+            //System.out.printf("%s\n", e.getValue());
+            if (!opts.skipTableDef) {
+                writer.write(String.format("%s;\n", e.getValue()));
+            }
+            getTableContent(tableMap.get(e.getKey()), conn, writer);
+        }
+        writer.close();
+
+        return "";
 
 
 //        for(Map.Entry<String, TableInfo> i: tableMap.entrySet()) {
@@ -171,6 +199,89 @@ public class Main {
 //        }
 
     }
+
+
+
+
+
+
+    public static void getTableContent(TableInfo ti, Connection conn, BufferedWriter writer) throws SQLException, IOException {
+        //every table
+        String tqr_s = String.format("select %s from %s",
+                ti.getColumns().stream().map(ent -> ent.getName()).collect(Collectors.joining(", ")),
+                ti.getTableName());
+        Statement stmt = conn.createStatement();
+        ResultSet rset = stmt.executeQuery(tqr_s);
+
+        class columnsign {
+            public columnsign(String name, String val) {
+                this.name = name;
+                this.val = val;
+            }
+
+            public String name;
+            public String val;
+        }
+        int ci=0;
+        //while(rset.next() && ci < 100) {
+        while(rset.next()) {
+            // every row
+            List <columnsign> collist = new ArrayList<>();
+            Map<ColumnInfo, Object> colvals = new HashMap<>();
+            for (ColumnInfo col : ti.getColumns()) {
+                // every col
+                if (col.getName().equalsIgnoreCase("btzeilenc_datum")) {
+                    int a=1;
+                }
+                DBType dbtype = col.getResultMatch().getSyntaxItem().getDBType();
+                if (dbtype.equals(DBType.BYTEA)) {
+                    InputStream is = rset.getBinaryStream(col.getName());
+                    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+                    int nRead;
+                    byte[] data = new byte[16384];
+
+                    while ((nRead = is.read(data, 0, data.length)) != -1) {
+                        buffer.write(data, 0, nRead);
+                    }
+                    String hex_str = javax.xml.bind.DatatypeConverter.printHexBinary(buffer.toByteArray());
+                    collist.add(new columnsign(col.getName(), "E'\\\\x" + hex_str + "'"));
+                }
+                else if (dbtype.equals(DBType.CHAR) || dbtype.equals(DBType.VARCHAR)) {
+                    String s = rset.getString(col.getName());
+                    if (s != null ) {
+                        s = s.replaceAll("'", "''");
+                        String wrap = col.getResultMatch().getSyntaxItem().getWrap();
+                        collist.add(
+                                new columnsign(col.getName(), wrap + s + wrap)
+                        );
+                    }
+                }
+                else {
+                    Object col_obj = rset.getObject(col.getName());
+                    if (col_obj != null) {
+                        String str_val = col.getResultMatch().getSyntaxItem().takeData(col_obj);
+                        String wrap = col.getResultMatch().getSyntaxItem().getWrap();
+                        collist.add(
+                                new columnsign(col.getName(), wrap + str_val + wrap)
+                        );
+                    } else {
+                        System.out.printf("Column %s is null\n", col.getName());
+                    }
+                    //colvals.put(col, rset.getObject(col.getName()));
+                }
+            }
+            String insert_Str = String.format("insert into %s (%s) values (%s)",
+                    ti.getTableName(),
+                    collist.stream().map(i -> i.name).collect(Collectors.joining(", ")),
+                    collist.stream().map(i -> i.val).collect(Collectors.joining(", "))
+            );
+            writer.write(String.format("%s;\n", insert_Str));
+            //colvals.entrySet().stream().map(i->i.getKey().getResultMatch().getSyntaxItem().getDBType())
+            ci++;
+        }
+    }
+
     public static void main (String args []) throws Exception {
         // Load Transbase driver, this might throw a ClassNotFoundException
         Class.forName("transbase.jdbc.Driver");
@@ -178,9 +289,40 @@ public class Main {
         String uname = "tbadmin";
         String pw = "altabe";
 
+        Options options = new Options();
+        Vector<String> argsvec = new Vector<String>();
+
+        for (String i: args ) {
+            argsvec.add(i);
+        }
+        argsvec.copyInto(args);
+
+        while (argsvec.size() > 0) {
+            switch (argsvec.firstElement()) {
+                case "--out-file":
+                    argsvec.remove(0);
+                    options.outFileName = argsvec.firstElement();
+                    argsvec.remove(0);
+                    break;
+                case "--table":
+                    argsvec.remove(0);
+                    options.tableName = argsvec.firstElement();
+                    argsvec.remove(0);
+                    break;
+                case "--get-table-list":
+                    argsvec.remove(0);
+                    options.takeTableList = true;
+                case "--skip-tabel-def":
+                    argsvec.remove(0);
+                    options.skipTableDef = true;
+
+            }
+
+        }
+
         Connection conn = DriverManager.getConnection(dburl, uname, pw);
-        String tabdef = getTableDefinition(conn);
-        System.out.println("==========");
+        String tabdef = getTableDefinition(conn, options);
+//        System.out.println("==========");
         System.out.print(tabdef);
 
 

@@ -30,6 +30,8 @@ public class ColumnInfo  implements ColumnInfoInterface{
     public boolean isNotNull() {
         return _notnull;
     }
+    public String getDefaultValue() { return _default_value; }
+
 
 
     public ColumnInfo(String name, String orig_type, ResultMath rm, Boolean notnull, String default_value, Integer ckey, Integer cpos) {

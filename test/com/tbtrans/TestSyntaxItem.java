@@ -76,8 +76,8 @@ public class TestSyntaxItem {
         input_map.put("CHAR(*)", "CHAR");
         input_map.put("CHAR(4)", "CHAR(4)");
         input_map.put("CHAR(45)", "CHAR(45)");
-        input_map.put("TINYINT", "TINYINT");
-        input_map.put("BLOB", "BLOB");
+        input_map.put("TINYINT", "SMALLINT");
+        input_map.put("BLOB", "BYTEA");
         input_map.put("BOOL", "BOOL");
         input_map.put("SMALLINT", "SMALLINT");
         input_map.put("DATETIME[yy:ms]", "TIMESTAMP");
